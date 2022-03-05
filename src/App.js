@@ -1,5 +1,6 @@
 import React from 'react';
 import * as d3 from 'd3';
+import { scaleLinear } from 'd3';
 
 class App extends React.Component {
 
@@ -27,6 +28,19 @@ class App extends React.Component {
     { name : "sleep", time : 500},
     { name : "play", time : 800},
   ]
+// bubble size function
+var bubbleSize = function(bubble) {
+  var allTimes = times.map(entry => entry.time);
+  var min = Math.min(...allTimes);
+  var max = Math.max(...allTimes);
+
+  var scale = d3.scaleLinear()
+    .domain([min, max])
+    .range([10, 50])
+
+  return scale(bubble.time);
+}
+
 
 // draw some test bubbles
 var bubbles = svg.append("g")
@@ -34,15 +48,14 @@ var bubbles = svg.append("g")
   .data(times)
   .enter()
   .append("circle")
-  .attr("class", "node")
-  .attr("r", 50)
-  .attr("cx", width / 2)
-  .attr("cy", height / 2)
-  .style("fill", "lightblue")
-  .style("fill-opacity", 0.8)
-  .attr("stroke", "black")
-  .style("stroke-width", 1);
-
+    .attr("class", "node")
+    .attr("r", d => bubbleSize(d))
+    .attr("cx", width / 2)
+    .attr("cy", height / 2)
+    .style("fill", "lightblue")
+    .style("fill-opacity", 0.8)
+    .attr("stroke", "black")
+    .style("stroke-width", 1);
 
 // Features of the forces applied to the nodes:
 var simulation = d3.forceSimulation()
