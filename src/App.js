@@ -1,25 +1,31 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import * as d3 from 'd3';
 
-function App() {
+class App extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.myRef = React.createRef();
+    this.dataset = [100, 200, 300, 400, 500];
+ }
+ 
+ componentDidMount() {
+  // set the dimensions and margins of the graph
+  var width = 460
+  var height = 460
+
+  // make a hello world message
+  d3.select(this.myRef.current)
+  .append("p")
+  .text("Hello World from D3");
+ }
+
+ render() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div ref={this.myRef}>
     </div>
   );
+ }
 }
 
 export default App;
