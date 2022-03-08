@@ -11,9 +11,9 @@ class App extends React.Component {
 
     // Global clock data
     this.categories = [
-      { name : "work", time : 0, color: 1},
-      { name : "sleep", time : 0, color: 2},
-      { name : "play", time : 20, color: 3}
+      { name : "work", runs : [], color: 1},
+      { name : "sleep", runs : [], color: 2},
+      { name : "play", runs : [], color: 3}
     ];
 
     // Global clock status
@@ -25,20 +25,33 @@ class App extends React.Component {
     this.bubbleSize = this.bubbleSize.bind(this);
     this.updateSizes = this.updateSizes.bind(this);
     this.resetSimulation = this.resetSimulation.bind(this);
-    this.handleClick = this.handleClick.bind(this);
+    this.handleTick = this.handleTick.bind(this);
+    this.getTotalTime = this.getTotalTime.bind(this);
  }
+
+  sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  getTotalTime(runs) {
+    var totalTime = 0;
+    runs.forEach(run => {
+      totalTime += ( run.end || Date.now() ) - run.start;
+    });
+    return totalTime;
+  }
 
   // Calculate relative bubble size
   bubbleSize(bubble) {
-    var allTimes = this.categories.map(entry => entry.time);
+    var allTimes = this.categories.map(entry => this.getTotalTime(entry.runs));
     var min = Math.min(...allTimes);
     var max = Math.max(...allTimes);
 
     var scale = d3.scaleLinear()
       .domain([min, max])
-      .range([40, 100]);
+      .range([30, 100]);
 
-    var radius = scale(bubble.time);
+    var radius = scale(this.getTotalTime(bubble.runs));
     bubble.radius = radius;
     return radius;
   }
@@ -65,13 +78,7 @@ class App extends React.Component {
   }
 
   // Handle clicks
-  handleClick() {
-
-    // Set a random bubble to a random size
-    var index = Math.floor(Math.random() * 3);
-    var value = Math.floor(Math.random() * 1001);
-    this.categories[index].time = value;
-
+  handleTick() {
     // Reset the simulation
     this.updateSizes();
     this.resetSimulation();
@@ -111,11 +118,22 @@ class App extends React.Component {
       .style("fill", d => color(d.color))
       .style("fill-opacity", 0.8)
       .attr("stroke", "white")
-      .style("stroke-width", 3);
+      .style("stroke-width", 3)
+      .on("click", (_event, d) => { 
+        var length = d.runs.length;
+        console.log(length);
+        // at least one entry and no end date on most recent
+        var isRunning = length != 0 && !d.runs[length-1].end;
+        if (isRunning) {
+          d.runs[length-1].end = Date.now();
+        } else {
+          d.runs.push({start: Date.now()});
+        }
+      });
   
   var bubbleLabels = bubbleGroups
       .append("text")
-      .text("00:00:00")
+      .text("0")
       .attr("stroke", "white")
       .attr("fill", "white")
       .attr("lengthAdjust", "spacingAndGlyphs")
@@ -146,13 +164,29 @@ class App extends React.Component {
       bubbleLabels
         .attr("x", d => d.x)
         .attr("y", d => d.y)
-
+        .text(d => {
+          var totalTime = 0;
+          d.runs.forEach(run => {
+            totalTime += ( run.end || Date.now() ) - run.start;
+          });
+          return totalTime;
+        })
   });
+
+  // Set up timer loop
+  var loop = async () => {
+    while (true) {
+      this.handleTick();
+      await this.sleep(500);
+    }
+ }
+
+ loop();
 }
 
  render() {
   return [
-    <div onClick={this.handleClick} ref={this.drawDiv}></div>
+    <div ref={this.drawDiv}></div>
   ];
  }
 }
