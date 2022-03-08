@@ -27,6 +27,11 @@ class App extends React.Component {
     this.resetSimulation = this.resetSimulation.bind(this);
     this.handleTick = this.handleTick.bind(this);
     this.getTotalTime = this.getTotalTime.bind(this);
+
+    window.addCategory = (category) => {
+      this.categories.push({name: category, runs: [], color: 2});
+      console.log(this.categories);
+    }
  }
 
   sleep(ms) {
@@ -59,7 +64,6 @@ class App extends React.Component {
   // Update the sizes of bubbles
   updateSizes() {
     d3.selectAll("circle")
-    .transition()
     .attr("r", d => this.bubbleSize(d));
   }
 
@@ -109,6 +113,7 @@ class App extends React.Component {
     .enter()
     .append("g");
 
+  // Initial bubbles
   var bubbles = bubbleGroups
       .append("circle")
       .attr("class", "node")
@@ -130,6 +135,31 @@ class App extends React.Component {
           d.runs.push({start: Date.now()});
         }
       });
+
+  // On bubble add (same thing)
+  bubbles.enter()
+      .append("circle")
+      .attr("class", "node")
+      .attr("class", "node")
+      .attr("r", d => this.bubbleSize(d, categories))
+      .attr("cx", width / 2)
+      .attr("cy", height / 2)
+      .style("fill", d => color(d.color))
+      .style("fill-opacity", 0.8)
+      .attr("stroke", "white")
+      .style("stroke-width", 3)
+      .on("click", (_event, d) => { 
+        var length = d.runs.length;
+        console.log(length);
+        // at least one entry and no end date on most recent
+        var isRunning = length != 0 && !d.runs[length-1].end;
+        if (isRunning) {
+          d.runs[length-1].end = Date.now();
+        } else {
+          d.runs.push({start: Date.now()});
+        }
+      });
+
   
   var bubbleLabels = bubbleGroups
       .append("text")
@@ -177,7 +207,7 @@ class App extends React.Component {
   var loop = async () => {
     while (true) {
       this.handleTick();
-      await this.sleep(500);
+      await this.sleep(10);
     }
  }
 
