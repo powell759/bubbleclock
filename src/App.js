@@ -36,9 +36,11 @@ class App extends React.Component {
 
     var scale = d3.scaleLinear()
       .domain([min, max])
-      .range([10, 50]);
+      .range([40, 100]);
 
-    return scale(bubble.time);
+    var radius = scale(bubble.time);
+    bubble.radius = radius;
+    return radius;
   }
 
   // Update the sizes of bubbles
@@ -55,7 +57,6 @@ class App extends React.Component {
     this.simulation
     .force("collide", d3.forceCollide().strength(.5).radius((d) => {
       var radius = this.bubbleSize(d) + 3;
-      console.log(radius);
       return radius;
     }).iterations(1));
 
@@ -111,6 +112,17 @@ class App extends React.Component {
       .style("fill-opacity", 0.8)
       .attr("stroke", "white")
       .style("stroke-width", 3);
+  
+  var bubbleLabels = bubbleGroups
+      .append("text")
+      .text("00:00:00")
+      .attr("stroke", "white")
+      .attr("fill", "white")
+      .attr("lengthAdjust", "spacingAndGlyphs")
+      .attr("x", width / 2)
+      .attr("y", height / 2)
+      .attr("text-anchor", "middle")
+      .attr("alignment-baseline", "central")
 
   // Features of the forces applied to the nodes:
   this.simulation = d3.forceSimulation()
@@ -126,9 +138,15 @@ class App extends React.Component {
   this.simulation
     .nodes(categories)
     .on("tick", function(d){
+
       bubbles
-        .attr("cx", function(d){ return d.x; })
-        .attr("cy", function(d){ return d.y; })
+        .attr("cx", d => d.x)
+        .attr("cy", d => d.y)
+
+      bubbleLabels
+        .attr("x", d => d.x)
+        .attr("y", d => d.y)
+
   });
 }
 
