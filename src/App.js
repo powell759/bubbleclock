@@ -48,7 +48,7 @@ bubbleSize(bubble) {
 
   var scale = d3.scaleLinear()
     .domain([min, max])
-    .range([30, 100]);
+    .range([20, 200]);
 
   var radius = scale(this.getTotalTime(bubble.runs));
   bubble.radius = radius;
@@ -122,7 +122,7 @@ updateDisplay() {
 
   this.simulation
     .nodes(this.categories)
-    .alpha(0.3)
+    .alpha(0.9)
     .restart();
 }
 
@@ -152,9 +152,9 @@ updateDisplay() {
       .force("x", d3.forceX().x(width/2).strength(.1))
       .force("y", d3.forceY().y(height/2).strength(.1))
       .force("charge", d3.forceManyBody().strength(.1)) // Nodes are attracted one each other of value is > 0
-      .force("collide", d3.forceCollide().strength(.5).radius((d) => {
+      .force("collide", d3.forceCollide().strength(1).radius((d) => {
         return this.bubbleSize(d) + 3;
-      }).iterations(1)); // Force that avoids circle overlapping
+      }).iterations(10)); // Force that avoids circle overlapping
 
     // Run the force simulation
     var svg = this.svg;
