@@ -11,9 +11,13 @@ class App extends React.Component {
 
     // Global clock data
     this.categories = [
-      { name : "work", runs : []},
-      { name : "sleep", runs : []},
-      { name : "play", runs : []}
+      { name : "coding", runs : []},
+      { name : "review", runs : []},
+      { name : "meetings", runs : []},
+      { name : "email", runs : []},
+      { name : "pipeline", runs : []},
+      { name : "project", runs : []},
+      { name : "off task", runs : []},
     ];
 
     window.addCategory = (category) => {
@@ -87,9 +91,6 @@ updateDisplay() {
     .selectAll("#bubbleGroup")
     .selectAll("circle")
     .data(this.categories);
-
-  console.log(SIMULATION_CENTER_X)
-  console.log(SIMULATION_CENTER_Y)
 
   bubbles.enter()
     .append("circle")
@@ -203,6 +204,30 @@ updateDisplay() {
 
   lines.exit().remove();
 
+  var totalTime = this.getTotalTime;
+  var labels = d3
+    .selectAll("#labelGroup")
+    .selectAll("text")
+    .data(categories)
+
+  labels.enter()
+    .append("text")
+    .attr("x", GAP_SIZE + TIMER_HEIGHT)
+    .attr("y", d => {
+      var index = categories.indexOf(d);
+      return GAP_SIZE + TIMER_HEIGHT * index + TIMER_HEIGHT / 2;
+    })
+    .text(d => {
+      var time = totalTime(d.runs);
+      var name = d.name;
+      var ms = parseInt((time % 1000) / 10)
+      var seconds = 0;
+    var minutes = 0;
+      var hours = 0;
+      return `${name}: ${hours}:${minutes}:${seconds}:${ms}`
+    })
+    .attr("fill", "white")
+
   this.simulation
     .nodes(this.categories)
     .alpha(0.9)
@@ -257,6 +282,10 @@ updateDisplay() {
   svg.append("g")
     .attr("id", "lineGroup");
 
+    // Create group for labels
+    svg.append("g")
+    .attr("id", "labelGroup");
+
   // Features of the forces applied to the nodes:
   this.simulation = d3.forceSimulation()
     .force("x", d3.forceX().x(SIMULATION_CENTER_X).strength(.1)) // X component of gravity
@@ -280,12 +309,19 @@ updateDisplay() {
       .selectAll("line")
       .attr("x2", d => Math.max(270 + d.radius, d.x))
       .attr("y2", d => Math.max(20 + d.radius, d.y))
-  });
 
-  // Add new category
-  svg.on("click", () => {
-    categories.push({name: "test", runs: []});
-    this.updateDisplay();
+    var totalTime = this.getTotalTime;
+    d3.selectAll("#labelGroup")
+    .selectAll("text")
+    .text(d => {
+      var time = totalTime(d.runs);
+      var name = d.name;
+      var ms = parseInt((time % 1000) / 10)
+      var seconds = parseInt((time / 1000) % 60);
+      var minutes = parseInt((time / 6000) % 60);
+      var hours = parseInt(time / 360000);
+      return `${name}: ${hours}:${minutes}:${seconds}:${ms}`
+    })
   });
 
   this.updateDisplay();
