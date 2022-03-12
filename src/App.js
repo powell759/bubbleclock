@@ -1,6 +1,5 @@
 import React from 'react';
 import * as d3 from 'd3';
-import { timeSaturday } from 'd3';
 
 class App extends React.Component {
 
@@ -73,10 +72,14 @@ updateSizes() {
 }
 
 updateDisplay() {
+  var viewWidth = window.innerWidth;
+  var viewHeight = window.innerHeight;
   var GAP_SIZE = 20;
   var NAV_WIDTH = 200;
   var STROKE_WIDTH = 3;
   var TIMER_HEIGHT = 50;
+  var SIMULATION_CENTER_X = (viewWidth + GAP_SIZE + NAV_WIDTH) / 2;
+  var SIMULATION_CENTER_Y = viewHeight / 2;
   var MAX_COLORS = 10;
   var categories = this.categories;
 
@@ -85,9 +88,14 @@ updateDisplay() {
     .selectAll("circle")
     .data(this.categories);
 
+  console.log(SIMULATION_CENTER_X)
+  console.log(SIMULATION_CENTER_Y)
+
   bubbles.enter()
     .append("circle")
     .attr("r", d => this.bubbleSize(d))
+    .attr("cx", SIMULATION_CENTER_X)
+    .attr("cy", SIMULATION_CENTER_Y)
     .style("fill", d => d3.interpolateTurbo(1 - (categories.indexOf(d) % MAX_COLORS) / MAX_COLORS))
     .attr("stroke", "white")
     .style("stroke-width", STROKE_WIDTH)
@@ -105,9 +113,6 @@ updateDisplay() {
       d3.selectAll("#lineGroup")
         .selectAll("line")
         .attr("stroke", d2 => {
-          console.log(d);
-          console.log(d2);
-          console.log(d == d2);
           return d == d2 ? "white" : "none"
         });
     });
@@ -134,9 +139,6 @@ updateDisplay() {
       d3.selectAll("#lineGroup")
         .selectAll("line")
         .attr("stroke", d2 => {
-          console.log(d);
-          console.log(d2);
-          console.log(d == d2);
           return d == d2 ? "white" : "none"
         });
     }).on("click", (e, d) => { 
@@ -166,9 +168,6 @@ updateDisplay() {
       d3.selectAll("#lineGroup")
         .selectAll("line")
         .attr("stroke", d2 => {
-          console.log(d);
-          console.log(d2);
-          console.log(d == d2);
           return d == d2 ? "white" : "none"
         });
     }).on("click", (e, d) => { 
@@ -227,6 +226,8 @@ updateDisplay() {
   var GAP_SIZE = 20;
   var NAV_WIDTH = 200;
   var STROKE_WIDTH = 3;
+  var SIMULATION_CENTER_X = (viewWidth + GAP_SIZE + NAV_WIDTH) / 2;
+  var SIMULATION_CENTER_Y = viewHeight / 2;
 
   // Create root svg element for drawing
   var svg = d3.select(rootDiv)
@@ -258,8 +259,8 @@ updateDisplay() {
 
   // Features of the forces applied to the nodes:
   this.simulation = d3.forceSimulation()
-    .force("x", d3.forceX().x((viewWidth + GAP_SIZE + NAV_WIDTH)/2).strength(.1)) // X component of gravity
-    .force("y", d3.forceY().y(viewHeight/2).strength(.2)) // Y component of gravity
+    .force("x", d3.forceX().x(SIMULATION_CENTER_X).strength(.1)) // X component of gravity
+    .force("y", d3.forceY().y(SIMULATION_CENTER_Y).strength(.2)) // Y component of gravity
     .force("charge", d3.forceManyBody().strength(.1)) // Nodes are attracted one each other of value is > 0
     .force("collide", d3.forceCollide().strength(1).radius((d) => {
       return this.bubbleSize(d) + 3;
