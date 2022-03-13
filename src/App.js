@@ -84,7 +84,6 @@ handleTimerHover(_event, d) {
 
 // Handle click on timer or corresponding bubble
 handleTimerClick(e, d) { 
-  e.stopPropagation();
   var length = d.runs.length;
   // at least one entry and no end date on most recent
   var isRunning = length != 0 && !d.runs[length-1].end;
@@ -240,7 +239,7 @@ updateDisplay() {
     .attr("stroke", "red")
     .style("stroke-width", STROKE_WIDTH)
     .on("click", (e, d) => {
-      e.stopPropagation()
+      e.stopPropagation() // don't propagate to timer button
       console.log(categories.indexOf(d));
       categories.splice(categories.indexOf(d), 1);
       this.updateDisplay()
