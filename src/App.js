@@ -25,11 +25,6 @@ class App extends React.Component {
       { name : "off task", runs : []},
     ];
 
-    window.addCategory = (category) => {
-      this.categories.push({name: category, runs: [], color: 2});
-      this.updateDisplay();
-    }
-
     this.getTotalTime = this.getTotalTime.bind(this);
     this.bubbleSize = this.bubbleSize.bind(this);
     this.updateSizes = this.updateSizes.bind(this);
