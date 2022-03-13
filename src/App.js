@@ -80,11 +80,25 @@ updateSizes() {
     .restart();
 }
 
-updateLineDisplay(_event, d) {
+// Handle hover on timer or corresponding bubble
+handleTimerHover(_event, d) {
   d3.selectAll("#lineGroup")
     .selectAll("line")
     .attr("stroke", d2 => d == d2 ? "white" : "none")
 };
+
+// Handle click on timer or corresponding bubble
+handleTimerClick(e, d) { 
+  e.stopPropagation();
+  var length = d.runs.length;
+  // at least one entry and no end date on most recent
+  var isRunning = length != 0 && !d.runs[length-1].end;
+  if (isRunning) {
+    d.runs[length-1].end = Date.now();
+  } else {
+    d.runs.push({start: Date.now()});
+  }
+}
 
 updateDisplay() {
   var viewWidth = window.innerWidth;
@@ -112,17 +126,8 @@ updateDisplay() {
     .style("fill", d => d3.interpolateRainbow(1 - (categories.indexOf(d) % MAX_COLORS) / MAX_COLORS))
     .attr("stroke", "white")
     .style("stroke-width", STROKE_WIDTH)
-    .on("click", (e, d) => { 
-      e.stopPropagation();
-      var length = d.runs.length;
-      // at least one entry and no end date on most recent
-      var isRunning = length != 0 && !d.runs[length-1].end;
-      if (isRunning) {
-        d.runs[length-1].end = Date.now();
-      } else {
-        d.runs.push({start: Date.now()});
-      }
-    }).on("mouseover", this.updateLineDisplay);
+    .on("click", this.handleTimerClick)
+    .on("mouseover", this.handleTimerHover);
 
   bubbles.join()
     .style("fill", d => d3.interpolateRainbow(1 - (categories.indexOf(d) % MAX_COLORS) / MAX_COLORS))
@@ -145,18 +150,8 @@ updateDisplay() {
     .attr("height", TIMER_HEIGHT)
     .attr("stroke", "white")
     .style("stroke-width", STROKE_WIDTH)
-    .on("mouseover", this.updateLineDisplay)
-    .on("click", (e, d) => { 
-      e.stopPropagation();
-      var length = d.runs.length;
-      // at least one entry and no end date on most recent
-      var isRunning = length != 0 && !d.runs[length-1].end;
-      if (isRunning) {
-        d.runs[length-1].end = Date.now();
-      } else {
-        d.runs.push({start: Date.now()});
-      }
-    })
+    .on("mouseover", this.handleTimerHover)
+    .on("click", this.handleTimerClick);
 
   timers.exit().remove();
 
