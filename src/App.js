@@ -314,8 +314,6 @@ updateDisplay() {
     .attr("stroke", "white")
     .style("stroke-width", STROKE_WIDTH);
 
-
-
   // Create all graphics groups
   var graphicGroups = ["bubbleGroup", "timerGroup", "timerGroupIcons", "lineGroup", "labelGroup", "clockGroup", "xGroup"]
   graphicGroups.forEach( group => svg.append("g").attr("id", group));
@@ -388,12 +386,9 @@ updateDisplay() {
     .selectAll("text")
     .text(d => {
       var time = totalTime(d.runs);
-      var ms = parseInt((time % 1000) / 10)
-      ms = ms < 10 ? "0" + ms : ms;
-      var seconds = parseInt((time / 1000) % 60);
-      seconds = seconds < 10 ? "0" + seconds : seconds;
-      var minutes = parseInt((time / 60000) % 60); 
-      minutes = minutes < 10 ? "0" + minutes : minutes;
+      var ms = parseInt((time % 1000) / 10).toString().padStart(2, '0')
+      var seconds = parseInt((time / 1000) % 60).toString().padStart(2, '0')
+      var minutes = parseInt((time / 60000) % 60).toString().padStart(2, '0')
       var hours = parseInt(time / 3600000);
       return `${hours}:${minutes}:${seconds}:${ms}`
     })
