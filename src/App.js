@@ -79,6 +79,7 @@ updateDisplay() {
   var viewWidth = window.innerWidth;
   var viewHeight = window.innerHeight;
   var GAP_SIZE = 20;
+  var INNER_GAP_SIZE = 10;
   var NAV_WIDTH = 200;
   var STROKE_WIDTH = 3;
   var TIMER_HEIGHT = 50;
@@ -118,6 +119,9 @@ updateDisplay() {
         });
     });
 
+  bubbles.join()
+    .style("fill", d => d3.interpolateRainbow(1 - (categories.indexOf(d) % MAX_COLORS) / MAX_COLORS))
+
   bubbles.exit().remove();
 
   var timers = d3
@@ -154,7 +158,14 @@ updateDisplay() {
       }
     })
 
-  timers.enter()
+  timers.exit().remove();
+
+  var timerIcons = d3
+    .selectAll("#timerGroupIcons")
+    .selectAll("circle")
+    .data(this.categories);
+
+  timerIcons.enter()  
     .append("circle")
     .attr("r", TIMER_HEIGHT / 4)
     .attr("cx", GAP_SIZE + TIMER_HEIGHT / 2)
@@ -182,8 +193,11 @@ updateDisplay() {
         d.runs.push({start: Date.now()});
       }
     })
+  
+  timerIcons.join()
+    .style("fill", d => d3.interpolateRainbow(1 - (categories.indexOf(d) % MAX_COLORS) / MAX_COLORS));
 
-  timers.exit().remove();
+  timerIcons.exit().remove();
 
   var lines = d3
     .selectAll("#lineGroup")
@@ -202,6 +216,7 @@ updateDisplay() {
     .attr("stroke", "none")
     .style("stroke-width", STROKE_WIDTH)
 
+
   lines.exit().remove();
 
   var labels = d3
@@ -217,7 +232,12 @@ updateDisplay() {
       return GAP_SIZE + TIMER_HEIGHT * index + TIMER_HEIGHT / 2 - 5;
     })
     .text(d => d.name)
-    .attr("fill", "white")
+    .attr("fill", "white");
+
+  labels.join()
+    .text(d => d.name);
+
+  labels.exit().remove();
 
   var clocks = d3
     .selectAll("#clockGroup")
@@ -235,6 +255,45 @@ updateDisplay() {
     .attr("fill", "white")
 
   clocks.exit().remove();
+
+  var xGroups = d3
+    .selectAll("#xGroup")
+    .selectAll("g")
+    .data(categories)
+
+  var enterGroup = xGroups.enter()
+    .append("g")
+    .attr("stroke", "red")
+    .style("stroke-width", STROKE_WIDTH)
+    .on("click", (e, d) => {
+      e.stopPropagation()
+      console.log(categories.indexOf(d));
+      categories.splice(categories.indexOf(d), 1);
+      this.updateDisplay()
+    });
+
+  enterGroup.append("rect")
+    .attr("x", NAV_WIDTH - INNER_GAP_SIZE)
+    .attr("y", d => {
+      var index = categories.indexOf(d);
+      return GAP_SIZE + INNER_GAP_SIZE + TIMER_HEIGHT * index;
+    })
+    .attr("width", GAP_SIZE)
+    .attr("height", GAP_SIZE);
+
+  enterGroup.append("line")
+    .attr("x1", () => NAV_WIDTH - INNER_GAP_SIZE)
+    .attr("y1", d => GAP_SIZE + INNER_GAP_SIZE + TIMER_HEIGHT * categories.indexOf(d))
+    .attr("x2", () => NAV_WIDTH + INNER_GAP_SIZE)
+    .attr("y2", d => GAP_SIZE * 2 + INNER_GAP_SIZE + TIMER_HEIGHT * categories.indexOf(d))
+
+  enterGroup.append("line")
+    .attr("x1", () => NAV_WIDTH - INNER_GAP_SIZE)
+    .attr("y2", d => GAP_SIZE + INNER_GAP_SIZE + TIMER_HEIGHT * categories.indexOf(d))
+    .attr("x2", () => NAV_WIDTH + INNER_GAP_SIZE)
+    .attr("y1", d => GAP_SIZE * 2 + INNER_GAP_SIZE + TIMER_HEIGHT * categories.indexOf(d))
+
+  xGroups.exit().remove();
 
   this.simulation
     .nodes(this.categories)
@@ -286,6 +345,10 @@ updateDisplay() {
   svg.append("g")
     .attr("id", "timerGroup");
 
+  // Create group for timer box icons
+  svg.append("g")
+    .attr("id", "timerGroupIcons");
+
   // Create group for connecting lines
   svg.append("g")
     .attr("id", "lineGroup");
@@ -297,6 +360,10 @@ updateDisplay() {
   // Create group for labels
   svg.append("g")
   .attr("id", "clockGroup");
+
+  // Create group for Xs
+  svg.append("g")
+  .attr("id", "xGroup");
 
   // Features of the forces applied to the nodes:
   this.simulation = d3.forceSimulation()
