@@ -171,17 +171,7 @@ updateDisplay() {
     .style("fill", d => d3.interpolateRainbow(1 - (categories.indexOf(d) % MAX_COLORS) / MAX_COLORS))
     .attr("stroke", "white")
     .style("stroke-width", STROKE_WIDTH)
-    .on("click", (e, d) => { 
-      e.stopPropagation();
-      var length = d.runs.length;
-      // at least one entry and no end date on most recent
-      var isRunning = length != 0 && !d.runs[length-1].end;
-      if (isRunning) {
-        d.runs[length-1].end = Date.now();
-      } else {
-        d.runs.push({start: Date.now()});
-      }
-    })
+    .on("click", this.handleTimerClick)
   
   timerIcons.join()
     .style("fill", d => d3.interpolateRainbow(1 - (categories.indexOf(d) % MAX_COLORS) / MAX_COLORS));
