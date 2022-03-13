@@ -32,6 +32,7 @@ class App extends React.Component {
     this.updateLinksRed = this.updateLinksRed.bind(this);
     this.updateXs = this.updateXs.bind(this);
     this.handleXHover = this.handleXHover.bind(this);
+    this.handleAddHover = this.handleAddHover.bind(this);
     this.handleBubbleHover = this.handleBubbleHover.bind(this);
     this.handleTimerHover = this.handleTimerHover.bind(this);
     this.updateDisplay = this.updateDisplay.bind(this);
@@ -126,6 +127,12 @@ handleXHover(e, d) {
   d3.selectAll("#xGroup")
   .selectAll("g")
   .attr("stroke", d2 => e.type == "mouseover" && d == d2 ? "red" : "none")
+}
+
+// Handle add button hover
+handleAddHover(e) {
+  d3.selectAll("#addButton")
+    .attr("stroke", () => e.type == "mouseover" ? "lightgreen" : "white")
 }
 
 // Handle bubble hover
@@ -283,7 +290,7 @@ updateDisplay() {
       this.updateDisplay()
     })
     .on("mouseover", this.handleXHover)
-    .on("mouseoute", this.handleXHover)
+    .on("mouseout", this.handleXHover)
 
   enterGroup.append("rect")
     .attr("x", NAV_WIDTH - INNER_GAP_SIZE)
@@ -362,6 +369,10 @@ async loop() {
   var updateDisplay = this.updateDisplay;
   var addGroup = svg
     .append("g")
+    .attr("id", "addButton")
+    .attr("stroke", "white")
+    .on("mouseover", this.handleAddHover)
+    .on("mouseout", this.handleAddHover)
     .on("click", () => {
       var newCat = prompt("Name of new timer:");
       if (newCat) {
@@ -372,7 +383,6 @@ async loop() {
 
   addGroup
     .append("rect")
-    .attr("stroke", "white")
     .attr("x", NAV_WIDTH / 2 + GAP_SIZE - TIMER_HEIGHT / 2)
     .attr("y", viewHeight - GAP_SIZE - TIMER_HEIGHT)
     .attr("height", TIMER_HEIGHT)
@@ -385,7 +395,6 @@ async loop() {
     .attr("x2", NAV_WIDTH / 2 + GAP_SIZE + TIMER_HEIGHT / 2 - INNER_GAP_SIZE)
     .attr("y1", viewHeight - GAP_SIZE - TIMER_HEIGHT / 2)
     .attr("y2", viewHeight - GAP_SIZE - TIMER_HEIGHT / 2)
-    .attr("stroke", "lightgreen")
     .style("stroke-width", 6)
 
     addGroup
@@ -394,7 +403,6 @@ async loop() {
     .attr("x2", NAV_WIDTH / 2 + GAP_SIZE)
     .attr("y1", viewHeight - GAP_SIZE - TIMER_HEIGHT + INNER_GAP_SIZE)
     .attr("y2", viewHeight - GAP_SIZE - INNER_GAP_SIZE)
-    .attr("stroke", "lightgreen")
     .style("stroke-width", 6)
 
   // Features of the forces applied to the nodes:
