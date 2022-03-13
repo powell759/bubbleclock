@@ -326,6 +326,8 @@ updateDisplay() {
     .append("svg")
     .attr("width", viewWidth)
     .attr("height", viewHeight - 4)
+    .style("font-family", "monospace")
+    .style("font-size", "15px");
 
   // Create visual bounding box for bubbles
   var simBox = svg
