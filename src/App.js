@@ -171,13 +171,7 @@ updateDisplay() {
     .style("fill", d => d3.interpolateRainbow(1 - (categories.indexOf(d) % MAX_COLORS) / MAX_COLORS))
     .attr("stroke", "white")
     .style("stroke-width", STROKE_WIDTH)
-    .on("mouseover", (_event, d) => {
-      d3.selectAll("#lineGroup")
-        .selectAll("line")
-        .attr("stroke", d2 => {
-          return d == d2 ? "white" : "none"
-        });
-    }).on("click", (e, d) => { 
+    .on("click", (e, d) => { 
       e.stopPropagation();
       var length = d.runs.length;
       // at least one entry and no end date on most recent
