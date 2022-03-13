@@ -80,6 +80,12 @@ updateSizes() {
     .restart();
 }
 
+updateLineDisplay(_event, d) {
+  d3.selectAll("#lineGroup")
+    .selectAll("line")
+    .attr("stroke", d2 => d == d2 ? "white" : "none")
+};
+
 updateDisplay() {
   var viewWidth = window.innerWidth;
   var viewHeight = window.innerHeight;
@@ -116,13 +122,7 @@ updateDisplay() {
       } else {
         d.runs.push({start: Date.now()});
       }
-    }).on("mouseover", (_event, d) => {
-      d3.selectAll("#lineGroup")
-        .selectAll("line")
-        .attr("stroke", d2 => {
-          return d == d2 ? "white" : "none"
-        });
-    });
+    }).on("mouseover", this.updateLineDisplay);
 
   bubbles.join()
     .style("fill", d => d3.interpolateRainbow(1 - (categories.indexOf(d) % MAX_COLORS) / MAX_COLORS))
@@ -145,13 +145,8 @@ updateDisplay() {
     .attr("height", TIMER_HEIGHT)
     .attr("stroke", "white")
     .style("stroke-width", STROKE_WIDTH)
-    .on("mouseover", (_event, d) => {
-      d3.selectAll("#lineGroup")
-        .selectAll("line")
-        .attr("stroke", d2 => {
-          return d == d2 ? "white" : "none"
-        });
-    }).on("click", (e, d) => { 
+    .on("mouseover", this.updateLineDisplay)
+    .on("click", (e, d) => { 
       e.stopPropagation();
       var length = d.runs.length;
       // at least one entry and no end date on most recent
