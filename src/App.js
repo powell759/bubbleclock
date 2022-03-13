@@ -28,6 +28,12 @@ class App extends React.Component {
     this.getTotalTime = this.getTotalTime.bind(this);
     this.bubbleSize = this.bubbleSize.bind(this);
     this.updateSizes = this.updateSizes.bind(this);
+    this.updateLinks = this.updateLinks.bind(this);
+    this.updateLinksRed = this.updateLinksRed.bind(this);
+    this.updateXs = this.updateXs.bind(this);
+    this.handleXHover = this.handleXHover.bind(this);
+    this.handleBubbleHover = this.handleBubbleHover.bind(this);
+    this.handleTimerHover = this.handleTimerHover.bind(this);
     this.updateDisplay = this.updateDisplay.bind(this);
     this.loop = this.loop.bind(this);
  }
@@ -75,15 +81,35 @@ updateSizes() {
     .restart();
 }
 
-// Handle hover on timer or corresponding bubble
-handleTimerHover(_event, d) {
+// Recalculate links
+updateLinks(e, d) {
   d3.selectAll("#lineGroup")
-    .selectAll("line")
-    .attr("stroke", d2 => d == d2 ? "white" : "none")
+  .selectAll("line")
+  .attr("stroke", d2 => e.type == "mouseover" && d == d2 ? "white" : "none")
+}
+
+// Recalculate links but red
+updateLinksRed(e, d) {
+  d3.selectAll("#lineGroup")
+  .selectAll("line")
+  .attr("stroke", d2 => e.type == "mouseover" && d == d2 ? "red" : "none")
+}
+
+// Recalculate links
+updateXs(e, d) {
+  d3.selectAll("#xGroup")
+  .selectAll("g")
+  .attr("stroke", d2 => e.type == "mouseover" && d == d2 ? "white" : "none")
+}
+
+// Handle hover on timer or corresponding bubble
+handleTimerHover(e, d) {
+    this.updateXs(e, d)
+    this.updateLinks(e, d);
 };
 
 // Handle click on timer or corresponding bubble
-handleTimerClick(e, d) { 
+handleTimerClick(_e, d) { 
   var length = d.runs.length;
   // at least one entry and no end date on most recent
   var isRunning = length != 0 && !d.runs[length-1].end;
@@ -92,6 +118,20 @@ handleTimerClick(e, d) {
   } else {
     d.runs.push({start: Date.now()});
   }
+}
+
+// Handle hover on the X button
+handleXHover(e, d) {
+  this.updateLinksRed(e, d)
+  d3.selectAll("#xGroup")
+  .selectAll("g")
+  .attr("stroke", d2 => e.type == "mouseover" && d == d2 ? "red" : "none")
+}
+
+// Handle bubble hover
+handleBubbleHover(e, d) {
+  this.updateXs(e, d)
+  this.updateLinks(e, d);
 }
 
 updateDisplay() {
@@ -121,7 +161,8 @@ updateDisplay() {
     .attr("stroke", "white")
     .style("stroke-width", STROKE_WIDTH)
     .on("click", this.handleTimerClick)
-    .on("mouseover", this.handleTimerHover);
+    .on("mouseover", this.handleBubbleHover)
+    .on("mouseout", this.handleBubbleHover)
 
   bubbles.join()
     .style("fill", d => d3.interpolateRainbow(1 - (categories.indexOf(d) % MAX_COLORS) / MAX_COLORS))
@@ -145,6 +186,7 @@ updateDisplay() {
     .attr("stroke", "white")
     .style("stroke-width", STROKE_WIDTH)
     .on("mouseover", this.handleTimerHover)
+    .on("mouseout", this.handleTimerHover)
     .on("click", this.handleTimerClick);
 
   timers.exit().remove();
@@ -186,9 +228,7 @@ updateDisplay() {
     })
     .attr("x2", window.innerWidth / 2)
     .attr("y2", window.innerHeight / 2)
-    .attr("stroke", "none")
     .style("stroke-width", STROKE_WIDTH)
-
 
   lines.exit().remove();
 
@@ -236,14 +276,14 @@ updateDisplay() {
 
   var enterGroup = xGroups.enter()
     .append("g")
-    .attr("stroke", "red")
     .style("stroke-width", STROKE_WIDTH)
     .on("click", (e, d) => {
       e.stopPropagation() // don't propagate to timer button
-      console.log(categories.indexOf(d));
       categories.splice(categories.indexOf(d), 1);
       this.updateDisplay()
-    });
+    })
+    .on("mouseover", this.handleXHover)
+    .on("mouseoute", this.handleXHover)
 
   enterGroup.append("rect")
     .attr("x", NAV_WIDTH - INNER_GAP_SIZE)
@@ -252,7 +292,7 @@ updateDisplay() {
       return GAP_SIZE + INNER_GAP_SIZE + TIMER_HEIGHT * index;
     })
     .attr("width", GAP_SIZE)
-    .attr("height", GAP_SIZE);
+    .attr("height", GAP_SIZE)
 
   enterGroup.append("line")
     .attr("x1", () => NAV_WIDTH - INNER_GAP_SIZE)
@@ -274,13 +314,13 @@ updateDisplay() {
     .restart();
 }
 
-  // Set up timer loop
-  async loop() {
-    while (true) {
-      this.updateSizes();
-      await this.sleep(10);
-    }
+// Set up timer loop
+async loop() {
+  while (true) {
+    this.updateSizes();
+    await this.sleep(10);
   }
+}
 
  async componentDidMount() {
 
