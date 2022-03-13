@@ -97,7 +97,7 @@ updateDisplay() {
     .attr("r", d => this.bubbleSize(d))
     .attr("cx", SIMULATION_CENTER_X)
     .attr("cy", SIMULATION_CENTER_Y)
-    .style("fill", d => d3.interpolateTurbo(1 - (categories.indexOf(d) % MAX_COLORS) / MAX_COLORS))
+    .style("fill", d => d3.interpolateRainbow(1 - (categories.indexOf(d) % MAX_COLORS) / MAX_COLORS))
     .attr("stroke", "white")
     .style("stroke-width", STROKE_WIDTH)
     .on("click", (e, d) => { 
@@ -162,7 +162,7 @@ updateDisplay() {
       var index = categories.indexOf(d);
       return GAP_SIZE + TIMER_HEIGHT / 2 + index * TIMER_HEIGHT;
     })
-    .style("fill", d => d3.interpolateTurbo(1 - (categories.indexOf(d) % MAX_COLORS) / MAX_COLORS))
+    .style("fill", d => d3.interpolateRainbow(1 - (categories.indexOf(d) % MAX_COLORS) / MAX_COLORS))
     .attr("stroke", "white")
     .style("stroke-width", STROKE_WIDTH)
     .on("mouseover", (_event, d) => {
@@ -204,7 +204,6 @@ updateDisplay() {
 
   lines.exit().remove();
 
-  var totalTime = this.getTotalTime;
   var labels = d3
     .selectAll("#labelGroup")
     .selectAll("text")
@@ -215,18 +214,27 @@ updateDisplay() {
     .attr("x", GAP_SIZE + TIMER_HEIGHT)
     .attr("y", d => {
       var index = categories.indexOf(d);
-      return GAP_SIZE + TIMER_HEIGHT * index + TIMER_HEIGHT / 2;
+      return GAP_SIZE + TIMER_HEIGHT * index + TIMER_HEIGHT / 2 - 5;
     })
-    .text(d => {
-      var time = totalTime(d.runs);
-      var name = d.name;
-      var ms = parseInt((time % 1000) / 10)
-      var seconds = 0;
-    var minutes = 0;
-      var hours = 0;
-      return `${name}: ${hours}:${minutes}:${seconds}:${ms}`
-    })
+    .text(d => d.name)
     .attr("fill", "white")
+
+  var clocks = d3
+    .selectAll("#clockGroup")
+    .selectAll("text")
+    .data(categories)
+
+  clocks.enter()
+    .append("text")
+    .attr("x", GAP_SIZE + TIMER_HEIGHT)
+    .attr("y", d => {
+      var index = categories.indexOf(d);
+      return GAP_SIZE + TIMER_HEIGHT * index + TIMER_HEIGHT / 2 + 15;
+    })
+    .text(d => d.name)
+    .attr("fill", "white")
+
+  clocks.exit().remove();
 
   this.simulation
     .nodes(this.categories)
@@ -282,9 +290,13 @@ updateDisplay() {
   svg.append("g")
     .attr("id", "lineGroup");
 
-    // Create group for labels
-    svg.append("g")
-    .attr("id", "labelGroup");
+  // Create group for labels
+  svg.append("g")
+  .attr("id", "labelGroup");
+
+  // Create group for labels
+  svg.append("g")
+  .attr("id", "clockGroup");
 
   // Features of the forces applied to the nodes:
   this.simulation = d3.forceSimulation()
@@ -311,7 +323,7 @@ updateDisplay() {
       .attr("y2", d => Math.max(20 + d.radius, d.y))
 
     var totalTime = this.getTotalTime;
-    d3.selectAll("#labelGroup")
+    d3.selectAll("#clockGroup")
     .selectAll("text")
     .text(d => {
       var time = totalTime(d.runs);
@@ -323,7 +335,7 @@ updateDisplay() {
       var minutes = parseInt((time / 6000) % 60);
       minutes = minutes < 10 ? "0" + minutes : minutes;
       var hours = parseInt(time / 360000);
-      return `${name}: ${hours}:${minutes}:${seconds}:${ms}`
+      return `${hours}:${minutes}:${seconds}:${ms}`
     })
   });
 
