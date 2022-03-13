@@ -11,12 +11,17 @@ class App extends React.Component {
 
     // Global clock data
     this.categories = [
-      { name : "coding", runs : []},
-      { name : "review", runs : []},
+      { name : "staring at this screen", runs : [{ start : Date.now() }]},
+      { name : "coding | project", runs : []},
+      { name : "coding | oe", runs : []},
+      { name : "misc | project", runs : []},
+      { name : "misc | oe", runs : []},
+      { name : "review | project", runs : []},
+      { name : "review | other", runs : []},
+      { name : "troubleshooting | self", runs : []},
+      { name : "troubleshooting | others", runs : []},
       { name : "meetings", runs : []},
-      { name : "email", runs : []},
-      { name : "pipeline", runs : []},
-      { name : "project", runs : []},
+      { name : "email / slack / chime", runs : []},
       { name : "off task", runs : []},
     ];
 
@@ -80,7 +85,7 @@ updateDisplay() {
   var viewHeight = window.innerHeight;
   var GAP_SIZE = 20;
   var INNER_GAP_SIZE = 10;
-  var NAV_WIDTH = 200;
+  var NAV_WIDTH = 300;
   var STROKE_WIDTH = 3;
   var TIMER_HEIGHT = 50;
   var SIMULATION_CENTER_X = (viewWidth + GAP_SIZE + NAV_WIDTH) / 2;
@@ -317,7 +322,7 @@ updateDisplay() {
   var viewHeight = window.innerHeight;
   var GAP_SIZE = 20;
   var INNER_GAP_SIZE = 10;
-  var NAV_WIDTH = 200;
+  var NAV_WIDTH = 300;
   var STROKE_WIDTH = 3;
   var TIMER_HEIGHT = 50;
   var SIMULATION_CENTER_X = (viewWidth + GAP_SIZE + NAV_WIDTH) / 2;
@@ -445,9 +450,9 @@ updateDisplay() {
       ms = ms < 10 ? "0" + ms : ms;
       var seconds = parseInt((time / 1000) % 60);
       seconds = seconds < 10 ? "0" + seconds : seconds;
-      var minutes = parseInt((time / 6000) % 60);
+      var minutes = parseInt((time / 60000) % 60); 
       minutes = minutes < 10 ? "0" + minutes : minutes;
-      var hours = parseInt(time / 360000);
+      var hours = parseInt(time / 3600000);
       return `${hours}:${minutes}:${seconds}:${ms}`
     })
   });
