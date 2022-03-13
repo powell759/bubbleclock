@@ -317,8 +317,11 @@ updateDisplay() {
       var time = totalTime(d.runs);
       var name = d.name;
       var ms = parseInt((time % 1000) / 10)
+      ms = ms < 10 ? "0" + ms : ms;
       var seconds = parseInt((time / 1000) % 60);
+      seconds = seconds < 10 ? "0" + seconds : seconds;
       var minutes = parseInt((time / 6000) % 60);
+      minutes = minutes < 10 ? "0" + minutes : minutes;
       var hours = parseInt(time / 360000);
       return `${name}: ${hours}:${minutes}:${seconds}:${ms}`
     })
