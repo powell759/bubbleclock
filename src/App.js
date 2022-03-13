@@ -320,33 +320,11 @@ updateDisplay() {
     .attr("stroke", "white")
     .style("stroke-width", STROKE_WIDTH);
 
-  // Create group for bubble vis
-  svg.append("g")
-    .attr("id", "bubbleGroup");
 
-  // Create group for box timers
-  svg.append("g")
-    .attr("id", "timerGroup");
 
-  // Create group for timer box icons
-  svg.append("g")
-    .attr("id", "timerGroupIcons");
-
-  // Create group for connecting lines
-  svg.append("g")
-    .attr("id", "lineGroup");
-
-  // Create group for labels
-  svg.append("g")
-  .attr("id", "labelGroup");
-
-  // Create group for labels
-  svg.append("g")
-  .attr("id", "clockGroup");
-
-  // Create group for Xs
-  svg.append("g")
-  .attr("id", "xGroup");
+  // Create all graphics groups
+  var graphicGroups = ["bubbleGroup", "timerGroup", "timerGroupIcons", "lineGroup", "labelGroup", "clockGroup", "xGroup"]
+  graphicGroups.forEach( group => svg.append("g").attr("id", group));
 
   // Create add button
   var updateDisplay = this.updateDisplay;
@@ -387,9 +365,6 @@ updateDisplay() {
     .attr("stroke", "lightgreen")
     .style("stroke-width", 6)
 
-
-
-
   // Features of the forces applied to the nodes:
   this.simulation = d3.forceSimulation()
     .force("x", d3.forceX().x(SIMULATION_CENTER_X).strength(.1)) // X component of gravity
@@ -419,7 +394,6 @@ updateDisplay() {
     .selectAll("text")
     .text(d => {
       var time = totalTime(d.runs);
-      var name = d.name;
       var ms = parseInt((time % 1000) / 10)
       ms = ms < 10 ? "0" + ms : ms;
       var seconds = parseInt((time / 1000) % 60);
