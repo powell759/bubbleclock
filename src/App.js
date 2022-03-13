@@ -316,8 +316,10 @@ updateDisplay() {
   var viewWidth = window.innerWidth;
   var viewHeight = window.innerHeight;
   var GAP_SIZE = 20;
+  var INNER_GAP_SIZE = 10;
   var NAV_WIDTH = 200;
   var STROKE_WIDTH = 3;
+  var TIMER_HEIGHT = 50;
   var SIMULATION_CENTER_X = (viewWidth + GAP_SIZE + NAV_WIDTH) / 2;
   var SIMULATION_CENTER_Y = viewHeight / 2;
 
@@ -366,6 +368,48 @@ updateDisplay() {
   // Create group for Xs
   svg.append("g")
   .attr("id", "xGroup");
+
+  // Create add button
+  var updateDisplay = this.updateDisplay;
+  var addGroup = svg
+    .append("g")
+    .on("click", () => {
+      var newCat = prompt("Name of new timer:");
+      if (newCat) {
+        categories.push({name : newCat, runs : []})
+        updateDisplay()
+      }
+    });
+
+  addGroup
+    .append("rect")
+    .attr("stroke", "white")
+    .attr("x", NAV_WIDTH / 2 + GAP_SIZE - TIMER_HEIGHT / 2)
+    .attr("y", viewHeight - GAP_SIZE - TIMER_HEIGHT)
+    .attr("height", TIMER_HEIGHT)
+    .attr("width", TIMER_HEIGHT)
+    .style("stroke-width", STROKE_WIDTH)
+
+  addGroup
+    .append("line")
+    .attr("x1", NAV_WIDTH / 2 + GAP_SIZE - TIMER_HEIGHT / 2 + INNER_GAP_SIZE)
+    .attr("x2", NAV_WIDTH / 2 + GAP_SIZE + TIMER_HEIGHT / 2 - INNER_GAP_SIZE)
+    .attr("y1", viewHeight - GAP_SIZE - TIMER_HEIGHT / 2)
+    .attr("y2", viewHeight - GAP_SIZE - TIMER_HEIGHT / 2)
+    .attr("stroke", "lightgreen")
+    .style("stroke-width", 6)
+
+    addGroup
+    .append("line")
+    .attr("x1", NAV_WIDTH / 2 + GAP_SIZE)
+    .attr("x2", NAV_WIDTH / 2 + GAP_SIZE)
+    .attr("y1", viewHeight - GAP_SIZE - TIMER_HEIGHT + INNER_GAP_SIZE)
+    .attr("y2", viewHeight - GAP_SIZE - INNER_GAP_SIZE)
+    .attr("stroke", "lightgreen")
+    .style("stroke-width", 6)
+
+
+
 
   // Features of the forces applied to the nodes:
   this.simulation = d3.forceSimulation()
