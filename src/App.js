@@ -258,7 +258,7 @@ updateDisplay() {
   var svg = d3.select(rootDiv)
     .append("svg")
     .attr("width", viewWidth)
-    .attr("height", viewHeight)
+    .attr("height", viewHeight - 4)
 
   // Create visual bounding box for bubbles
   var simBox = svg
