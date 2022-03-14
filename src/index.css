@@ -20,3 +20,25 @@ body {
   display: flex;
   justify-content: center;
 }
+
+
+@media screen and (min-width: 600px)
+{
+  #smallscreen {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 600px)
+{
+  #root {
+    display: none;
+  }
+  #smallscreen {
+    font-family: monospace;
+    color: white;
+    text-align: center;
+    padding: 20px;
+  }
+  
+}
