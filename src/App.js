@@ -12,17 +12,12 @@ class App extends React.Component {
     // Global clock data
     this.categories = [
       { name : "staring at this screen", runs : [{ start : Date.now() }]},
-      { name : "coding | project", runs : []},
-      { name : "coding | oe", runs : []},
-      { name : "misc | project", runs : []},
-      { name : "misc | oe", runs : []},
-      { name : "review | project", runs : []},
-      { name : "review | other", runs : []},
-      { name : "troubleshooting | self", runs : []},
-      { name : "troubleshooting | others", runs : []},
-      { name : "meetings", runs : []},
-      { name : "email / slack / chime", runs : []},
-      { name : "off task", runs : []},
+      { name : "doing thing one", runs : []},
+      { name : "doing thing three", runs : []},
+      { name : "doing thing four", runs : []},
+      { name : "doing thing five", runs : []},
+      { name : "doing thing six", runs : []},
+      { name : "meetings", runs : []}
     ];
 
     this.getTotalTime = this.getTotalTime.bind(this);
